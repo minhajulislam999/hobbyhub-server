@@ -64,6 +64,27 @@ app.delete('/groups/:id', async (req, res) => {
   res.send(result);
 });
 
+// Update Group
+
+app.put('/groups/:id', async (req, res) => {
+    const id = req.params.id;
+    const updatedGroup = req.body;
+    const filter = {_id: new ObjectId(id) };
+    const updateDoc = {
+        $set:{
+            groupName: updatedGroup.groupName,
+            category: updatedGroup.category,
+            description: updatedGroup.description,
+            meetingLocation: updatedGroup.meetingLocation,
+            maxMembers: updatedGroup.maxMembers,
+            startDate: updatedGroup.startDate,
+            imgUrl: updatedGroup.imgUrl
+        }
+    }
+    const result = await groupsCollection.updateOne(filter, updateDoc)
+    res.send(result);
+})
+
 
     } finally {
         // await client.close();
