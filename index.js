@@ -27,6 +27,12 @@ async function run() {
     const db = client.db('hobbyhub');
     const groupsCollection = db.collection('groups');
 
+        // Create a new group
+        app.post('/groups', async(req, res) => {
+            const group = req.body;
+            const result = await groupsCollection.insertOne(group);
+            res.send(result);
+        })
    
 
   } finally {
