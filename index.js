@@ -13,56 +13,71 @@ app.use(express.json());
 // MongoDB Connection
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.7ud3uec.mongodb.net/?appName=Cluster0`;
 const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    }
 });
 
 async function run() {
-  try {
-    await client.connect();
-    
-    const db = client.db('hobbyhub');
-    const groupsCollection = db.collection('groups');
+    try {
+        await client.connect();
+
+        const db = client.db('hobbyhub');
+        const groupsCollection = db.collection('groups');
 
         // Create a new group
-        app.post('/groups', async(req, res) => {
+        app.post('/groups', async (req, res) => {
             const group = req.body;
             const result = await groupsCollection.insertOne(group);
             res.send(result);
         })
 
-            // Get all groups
-        app.get('/groups', async(req, res) => {
-            const result = await groupsCollection.find().toArray();
+        // Get All Groups or User Specific Groups
+        app.get('/groups', async (req, res) => {
+            const email = req.query.email;
+
+            let query = {};
+            if (email) {
+                query = { creatorEmail: email };
+            }
+
+            const result = await groupsCollection.find(query).toArray();
             res.send(result);
-        }
-        )
+        });
 
         // Get Single Group
-app.get('/groups/:id', async (req, res) => {
+        app.get('/groups/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await groupsCollection.findOne(query);
+            res.send(result);
+        });
+
+
+        // Delete Group
+app.delete('/groups/:id', async (req, res) => {
   const id = req.params.id;
   const query = { _id: new ObjectId(id) };
-  const result = await groupsCollection.findOne(query);
+  const result = await groupsCollection.deleteOne(query);
   res.send(result);
 });
-   
 
-  } finally {
-    // await client.close();
-  }
+
+    } finally {
+        // await client.close();
+    }
 }
 
 run().catch(console.dir);
 
 
- // Test route
-    app.get('/', (req, res) => {
-      res.send('HobbyHub Server is running!');
-    });
+// Test route
+app.get('/', (req, res) => {
+    res.send('HobbyHub Server is running!');
+});
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+    console.log(`Server is running on port ${port}`);
 });
