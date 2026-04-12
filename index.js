@@ -33,6 +33,13 @@ async function run() {
             const result = await groupsCollection.insertOne(group);
             res.send(result);
         })
+
+            // Get all groups
+        app.get('/groups', async(req, res) => {
+            const result = await groupsCollection.find().toArray();
+            res.send(result);
+        }
+        )
    
 
   } finally {
