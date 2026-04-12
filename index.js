@@ -40,6 +40,14 @@ async function run() {
             res.send(result);
         }
         )
+
+        // Get Single Group
+app.get('/groups/:id', async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const result = await groupsCollection.findOne(query);
+  res.send(result);
+});
    
 
   } finally {
