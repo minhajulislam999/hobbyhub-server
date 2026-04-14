@@ -6,11 +6,15 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5001;
 
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://transcendent-cocada-88d049.netlify.app'
+  ]
+}));app.use(express.json());
 
-const uri = `mongodb+srv://mm01882390860_db_user:0tySj1gPr6e96LJn@cluster0.7ud3uec.mongodb.net/?appName=Cluster0`;
-
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.7ud3uec.mongodb.net/?appName=Cluster0`;
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
